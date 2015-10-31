@@ -1,0 +1,25 @@
+<html>
+<body>
+Welcome back {{username}}!<br><br>
+<form action="logout" method = "post">
+    <button type="submit">Log Out</button>
+</form>
+
+<form action="add-team" method="post">
+    <input type="text" placeholder="Team name" name="teamName"/>
+    <select name = "sport">
+        <option value="Football">Football</option>
+        <option value="Baseball">Baseball</option>
+        <option value="Basketball">Basketball</option>
+        <option value="Hockey">Hockey</option>
+        <option value="Quidditch">Quidditch</option>
+    </select>
+    <input type="text" placeholder="Record" name="record"/>
+    <button type="submit">Submit</button>
+</form><br><br>
+
+{{#teams}}
+{{id}}: {{teamName}} - {{sport}} - {{record}}<br><br>
+{{/teams}}
+</body>
+</html>

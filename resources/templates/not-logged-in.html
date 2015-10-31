@@ -1,0 +1,15 @@
+<html>
+<body>
+<form action="login" method="post">
+    <input type = "text" placeholder="Enter name" name="username"/>
+    <input type="password" placeholder="Password" name="password"/>
+    <button type = "submit">Submit</button>
+</form><br><br>
+
+{{^username}}
+{{#teams}}
+{{id}}: {{teamName}} - {{sport}} - {{record}}<br><br>
+{{/teams}}
+{{/username}}
+</body>
+</html>
