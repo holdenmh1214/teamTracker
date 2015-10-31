@@ -76,8 +76,4 @@ public class Main {
 
     }
 
-
-    static void addTestTeam(ArrayList<Team> teamTest) {
-        teamTest.add(new Team());
-    }
 }
