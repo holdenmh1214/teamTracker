@@ -61,6 +61,16 @@ public class Main {
         );
 
         Spark.post(
+                "/logout",
+                ((request, response) -> {
+                    Session session = request.session();
+                    session.invalidate();
+                    response.redirect("/");
+                    return "";
+                })
+        );
+
+        Spark.post(
                 "/add-team",
                 ((request, response) -> {
                     Team team = new Team();
@@ -74,6 +84,52 @@ public class Main {
                 })
         );
 
-    }
+        Spark.get(
+                "/remove-team",
+                ((request, response) -> {
+                    String idNum = request.queryParams("id");
 
+                    try{
+                        int id = Integer.valueOf(idNum);
+                        teamList.remove(id-1);
+                        for(int i = 0; i< teamList.size(); i++){
+                            teamList.get(i).id = i + 1;
+                        }
+                    } catch (Exception e) {
+                    }
+
+                    response.redirect("/");
+                    return "";
+                })
+        );
+
+        Spark.get(
+                "/edit-team",
+                ((request, response) -> {
+                    HashMap m = new HashMap();
+                    String id = request.queryParams("id");
+                    m.put("id", id);
+                    return new ModelAndView(m, "edit-team.html");
+                }),
+                new MustacheTemplateEngine()
+        );
+
+        Spark.post(
+                "/edit-team",
+                (request, response) -> {
+                    try {
+                        String id = request.queryParams("id");
+                        int idNum = Integer.valueOf(id);
+                        Team team = teamList.get(idNum - 1);
+                        team.teamName = request.queryParams("editName");
+                        team.sport = request.queryParams("editSport");
+                        team.record = request.queryParams("editRecord");
+                    } catch (Exception e) {
+
+                    }
+                    response.redirect("/");
+                    return "";
+                }
+        );
+    }
 }

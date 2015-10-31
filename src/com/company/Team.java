@@ -8,5 +8,4 @@ public class Team {
     String sport;
     String record;
     int id;
-
 }

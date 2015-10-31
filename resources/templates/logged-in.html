@@ -1,6 +1,6 @@
 <html>
 <body>
-Welcome back {{username}}!<br><br>
+Welcome back <b>{{username}}</b>!
 <form action="logout" method = "post">
     <button type="submit">Log Out</button>
 </form>
@@ -19,7 +19,9 @@ Welcome back {{username}}!<br><br>
 </form><br><br>
 
 {{#teams}}
-{{id}}: {{teamName}} - {{sport}} - {{record}}<br><br>
+{{id}}: {{teamName}} - {{sport}} - {{record}}<br>
+<a href="/edit-team?id={{id}}"><button>Edit</button></a> <a href="/remove-team?id={{id}}"><button>Remove</button></a>
+<br><br>
 {{/teams}}
 </body>
 </html>
