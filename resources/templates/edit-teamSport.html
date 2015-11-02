@@ -1,0 +1,16 @@
+<html>
+<body>
+Edit Team Sport {{teamName}}
+<form action="edit-teamSport" method="post">
+    <input type="hidden" name="id" value="{{id}}"/>
+    <select name="editSport">
+        <option value="Football">Football</option>
+        <option value="Baseball">Baseball</option>
+        <option value="Basketball">Basketball</option>
+        <option value="Hockey">Hockey</option>
+        <option value="Quidditch">Quidditch</option>
+    </select>
+    <button type="submit">Submit</button>
+</form>
+</body>
+</html>
