@@ -14,6 +14,8 @@ public class Main {
         HashMap<String, User> userMap = new HashMap();
         ArrayList<Team> teamList = new ArrayList();
 
+        //addTestTeam(teamList); **DOESN'T WORK....**
+
 
         Spark.get(
                 "/",
@@ -43,13 +45,13 @@ public class Main {
                             Spark.halt(403);
                         }
 
-                        User tempName = userMap.get(username);
+                        User name = userMap.get(username);
 
-                        if (tempName == null) {
-                            tempName = new User();
-                            tempName.password = logPass;
-                            tempName = userMap.put(username, tempName);
-                        } else if (!logPass.equals(tempName.password)) {
+                        if (name == null) {
+                            name = new User();
+                            name.password = logPass;
+                            name = userMap.put(username, name);
+                        } else if (!logPass.equals(name.password)) {
                             Spark.halt(403);
                         }
 
@@ -74,10 +76,10 @@ public class Main {
                 "/add-team",
                 ((request, response) -> {
                     Team team = new Team();
-                    team.id = teamList.size() + 1;
                     team.teamName = request.queryParams("teamName");
                     team.sport = request.queryParams("sport");
                     team.record= request.queryParams("record");
+                    team.id = teamList.size() + 1;
                     teamList.add(team);
                     response.redirect("/");
                     return "";
@@ -132,4 +134,9 @@ public class Main {
                 }
         );
     }
+
+   /* static void addTestTeam(ArrayList<Team> test){
+        test.add(new Team("Hawks", "Football","10",0));
+
+    }*/
 }
