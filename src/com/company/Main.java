@@ -44,17 +44,7 @@ public class Main {
                         if (username.isEmpty() || logPass.isEmpty()) {
                             Spark.halt(403);
                         }
-
                         User name = userMap.get(username);
-
-                        if (name == null) {
-                            name = new User();
-                            name.password = logPass;
-                            name = userMap.put(username, name);
-                        } else if (!logPass.equals(name.password)) {
-                            Spark.halt(403);
-                        }
-
                         Session session = request.session();
                         session.attribute("username", username);
                     response.redirect("/");
@@ -186,7 +176,7 @@ public class Main {
                 }
         );
     }
-    
+
 
    /* static void addTestTeam(ArrayList<Team> test){
         test.add(new Team("Hawks", "Football","10",0));
