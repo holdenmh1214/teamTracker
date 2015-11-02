@@ -105,26 +105,78 @@ public class Main {
                 })
         );
 
-        Spark.get(
-                "/edit-team",
+        Spark.get(  //Have to remember this needs to be a "get" function........
+                "/edit-teamName",
                 ((request, response) -> {
                     HashMap m = new HashMap();
                     String id = request.queryParams("id");
                     m.put("id", id);
-                    return new ModelAndView(m, "edit-team.html");
+                    return new ModelAndView(m, "edit-teamName.html");
                 }),
                 new MustacheTemplateEngine()
         );
 
         Spark.post(
-                "/edit-team",
+                "/edit-teamName",
                 (request, response) -> {
                     try {
                         String id = request.queryParams("id");
                         int idNum = Integer.valueOf(id);
                         Team team = teamList.get(idNum - 1);
                         team.teamName = request.queryParams("editName");
+                    } catch (Exception e) {
+
+                    }
+                    response.redirect("/");
+                    return "";
+                }
+        );
+
+        Spark.get(
+                "/edit-teamSport",
+                ((request, response) -> {
+                    HashMap m = new HashMap();
+                    String id = request.queryParams("id");
+                    m.put("id", id);
+                    return new ModelAndView(m, "edit-teamSport.html");
+                }),
+                new MustacheTemplateEngine()
+        );
+
+        Spark.post(
+                "/edit-teamSport",
+                (request, response) -> {
+                    try {
+                        String id = request.queryParams("id");
+                        int idNum = Integer.valueOf(id);
+                        Team team = teamList.get(idNum - 1);
                         team.sport = request.queryParams("editSport");
+                    } catch (Exception e) {
+
+                    }
+                    response.redirect("/");
+                    return "";
+                }
+        );
+
+        Spark.get(
+                "/edit-teamRecord",
+                ((request, response) -> {
+                    HashMap m = new HashMap();
+                    String id = request.queryParams("id");
+                    m.put("id", id);
+                    return new ModelAndView(m, "edit-teamRecord.html");
+                }),
+                new MustacheTemplateEngine()
+        );
+
+        Spark.post(
+                "/edit-teamRecord",
+                (request, response) -> {
+                    try {
+                        String id = request.queryParams("id");
+                        int idNum = Integer.valueOf(id);
+                        Team team = teamList.get(idNum - 1);
                         team.record = request.queryParams("editRecord");
                     } catch (Exception e) {
 
