@@ -19,19 +19,7 @@ Welcome back <b>{{username}}</b>!
 </form><br><br>
 
 {{#teams}}
-{{id}}: {{teamName}} <a href="/edit-teamName?id={{id}}">
-    <button>Edit</button>
-</a> -
-{{sport}} <a href="/edit-teamSport?id={{id}}">
-    <button>Edit</button>
-</a> -
-{{record}} <a href="/edit-teamRecord?id={{id}}">
-    <button>Edit</button>
-</a> <br>
-<a href="/remove-team?id={{id}}">
-    <button>Remove</button>
-</a>
-<br><br>
+{{id}}: {{teamName}} {{sport}} {{record}}<br>
 {{/teams}}
 </body>
 </html>

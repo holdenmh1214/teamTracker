@@ -6,4 +6,5 @@ package com.company;
 public class User {
    // String username;  ** NOT NEEDED... yet
     String password;
+    int id;
 }

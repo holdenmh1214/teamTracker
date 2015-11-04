@@ -5,16 +5,85 @@ import spark.Session;
 import spark.Spark;
 import spark.template.mustache.MustacheTemplateEngine;
 
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 
 public class Main {
 
-    public static void main(String[] args) {
-        HashMap<String, User> userMap = new HashMap();
-        ArrayList<Team> teamList = new ArrayList();
+    public static void createTables(Connection conn) throws SQLException {
+        Statement stmt = conn.createStatement();
+        stmt.execute("CREATE TABLE IF NOT EXISTS users (id IDENTITY, name VARCHAR, password VARCHAR)");
+        stmt.execute("CREATE TABLE IF NOT EXISTS teams (id IDENTITY, user_id INT, team_name VARCHAR," +
+                " sport VARCHAR, record VARCHAR)");
+    }
 
-        //addTestTeam(teamList); **DOESN'T WORK....**
+    public static void insertUser(Connection conn, String name, String password) throws SQLException {
+        PreparedStatement stmt = conn.prepareStatement("INSERT INTO users VALUES(NULL, ?, ?)");
+        stmt.setString(1, name);
+        stmt.setString(2, password);
+        stmt.execute();
+    }
+
+    public static User selectUser(Connection conn, String name) throws SQLException {
+        User user = null;
+        PreparedStatement stmt = conn.prepareStatement("SELECT * FROM users WHERE name=?");
+        stmt.setString(1, name);
+        ResultSet results = stmt.executeQuery();
+        if (results.next()) {
+            user = new User();
+            user.id = results.getInt("id");
+            user.password = results.getString("password");
+        }
+        return user;
+    }
+
+    public static void insertTeam(Connection conn, int userId, String teamName, String sport, String record)
+            throws SQLException {
+        PreparedStatement stmt = conn.prepareStatement("INSERT INTO teams VALUES (NULL, ?, ?, ?, ?)");
+        stmt.setInt(1, userId);
+        stmt.setString(2, teamName);
+        stmt.setString(3, sport);
+        stmt.setString(4, record);
+        stmt.execute();
+    }
+
+    public static Team selectTeam(Connection conn, int id) throws SQLException {
+        Team team = null;
+        PreparedStatement stmt = conn.prepareStatement("SELECT * FROM teams " +
+                "INNER JOIN users ON teams.user_id = users.id WHERE teams.id=?");
+        stmt.setInt(1, id);
+        ResultSet results = stmt.executeQuery();
+        if (results.next()) {
+            team = new Team();
+            team.id = results.getInt("teams.id");
+            team.teamName = results.getString("teams.team_name");
+            team.sport = results.getString("teams.sport");
+            team.record = results.getString("teams.record");
+        }
+        return team;
+    }
+
+    public static ArrayList<Team> selectTeams(Connection conn) throws SQLException {
+        ArrayList<Team> teams = new ArrayList<>();
+        PreparedStatement stmt = conn.prepareStatement("SELECT * FROM teams");
+        ResultSet results = stmt.executeQuery();
+        while (results.next()) {
+            Team team = new Team();
+            team.id = results.getInt("teams.id");
+            team.teamName = results.getString("teams.team_name");
+            team.sport = results.getString("teams.sport");
+            team.record = results.getString("teams.record");
+            teams.add(team);
+        }
+        return teams;
+    }
+
+    public static void main(String[] args) throws SQLException {
+        Connection conn = DriverManager.getConnection("jdbc:h2:./main");
+
+        createTables(conn);
+
 
 
         Spark.get(
@@ -22,9 +91,10 @@ public class Main {
                 ((request, response) -> {
                     Session session = request.session();
                     String name = session.attribute("username");
+                    ArrayList<Team> teams = selectTeams(conn);
                     HashMap m = new HashMap();
                     m.put("username", name);
-                    m.put("teams", teamList);
+                    m.put("teams", teams);
 
                     if (name == null) {
                         return new ModelAndView(m, "not-logged-in.html");
@@ -44,7 +114,15 @@ public class Main {
                         if (username.isEmpty() || logPass.isEmpty()) {
                             Spark.halt(403);
                         }
-                        User name = userMap.get(username);
+
+                    User name = selectUser(conn, username);
+
+                    if (name == null) {
+                        insertUser(conn, username, logPass);
+                    } else if (!logPass.equals(name.password)) {
+                        Spark.halt(403);
+                    }
+
                         Session session = request.session();
                         session.attribute("username", username);
                     response.redirect("/");
@@ -65,18 +143,22 @@ public class Main {
         Spark.post(
                 "/add-team",
                 ((request, response) -> {
-                    Team team = new Team();
-                    team.teamName = request.queryParams("teamName");
-                    team.sport = request.queryParams("sport");
-                    team.record= request.queryParams("record");
-                    team.id = teamList.size() + 1;
-                    teamList.add(team);
+                    Session session = request.session();
+                    String username = session.attribute("username");
+                    String teamName = request.queryParams("teamName");
+                    String sport = request.queryParams("sport");
+                    String record = request.queryParams("record");
+                    try {
+                        User me = selectUser(conn, username);
+                        insertTeam(conn, me.id, teamName, sport, record);
+                    } catch (Exception e) {
+                    }
                     response.redirect("/");
                     return "";
                 })
         );
 
-        Spark.get(
+       /* Spark.get(
                 "/remove-team",
                 ((request, response) -> {
                     String idNum = request.queryParams("id");
@@ -174,12 +256,8 @@ public class Main {
                     response.redirect("/");
                     return "";
                 }
-        );
+        );*/
     }
 
 
-   /* static void addTestTeam(ArrayList<Team> test){
-        test.add(new Team("Hawks", "Football","10",0));
-
-    }*/
 }
